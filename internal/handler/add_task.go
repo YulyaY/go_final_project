@@ -36,7 +36,6 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 	dateParse, err := time.Parse(domain.FormatDate, t.Date)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		// fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
 		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, "error of parse date"))
 		return
 	}

@@ -34,6 +34,7 @@ func main() {
 	r.Get("/api/nextdate", handler.NextDate)
 	r.Post("/api/task", handler.AddTask)
 	r.Get("/api/tasks", handler.GetTasks)
+	r.Get("/api/task", handler.GetTask)
 
 	fmt.Println("Server is going to start")
 	port := os.Getenv("TODO_PORT")

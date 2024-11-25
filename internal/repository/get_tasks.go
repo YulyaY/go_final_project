@@ -8,13 +8,13 @@ import (
 
 func (r *Repository) GetTasks() ([]model.Task, error) {
 	tasks := make([]model.Task, 0, 10)
-	res, err := r.db.Query("SELECT date, title, comment, repeat FROM scheduler ORDER BY date LIMIT 10")
+	res, err := r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT 10")
 	if err != nil {
 		return tasks, fmt.Errorf("Repository.GetTasks select error: %w", err)
 	}
 	for res.Next() {
 		var t model.Task
-		err := res.Scan(&t.Date, &t.Title, &t.Comment, &t.Repeat)
+		err := res.Scan(&t.Id, &t.Date, &t.Title, &t.Comment, &t.Repeat)
 		if err != nil {
 			return tasks, fmt.Errorf("Repository.GetTasks scan error: %w", err)
 		}
