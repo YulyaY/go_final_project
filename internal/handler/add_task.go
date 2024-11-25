@@ -71,6 +71,6 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
+	w.WriteHeader(http.StatusOK)
 	w.Write(result)
 }

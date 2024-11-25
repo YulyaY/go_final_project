@@ -17,7 +17,7 @@ func (h *Handler) NextDate(w http.ResponseWriter, r *http.Request) {
 	var nextDateStruct NextDate
 	nowString := r.FormValue("now")
 	var err error
-	nextDateStruct.Now, err = time.Parse("20060102", nowString)
+	nextDateStruct.Now, err = time.Parse(domain.FormatDate, nowString)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 	}
