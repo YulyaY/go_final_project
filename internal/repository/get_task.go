@@ -15,7 +15,7 @@ func (r *Repository) GetTask(id int) (model.Task, error) {
 	res := r.db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id))
 	err := res.Scan(&t.Id, &t.Date, &t.Title, &t.Comment, &t.Repeat)
 	if err != nil {
-		return t, fmt.Errorf("Repository.EditTask select error: %w", err)
+		return t, fmt.Errorf("Repository.GetTask select error: %w", err)
 	}
 	if t.Id == "" {
 		return t, fmt.Errorf(errIdIsNotFound.Error())

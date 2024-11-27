@@ -35,6 +35,9 @@ func main() {
 	r.Post("/api/task", handler.AddTask)
 	r.Get("/api/tasks", handler.GetTasks)
 	r.Get("/api/task", handler.GetTask)
+	r.Put("/api/task", handler.UpdateTask)
+	r.Post("/api/task/done", handler.DoneTask)
+	r.Delete("/api/task", handler.DeleteTask)
 
 	fmt.Println("Server is going to start")
 	port := os.Getenv("TODO_PORT")

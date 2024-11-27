@@ -14,19 +14,20 @@ import (
 var errTitleIsEmpty error = errors.New("title is empty")
 
 func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var t model.Task
 	now := time.Now()
-	w.Header().Set("Content-Type", "application/json")
-
 	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
 		return
 	}
 
 	if t.Title == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, errTitleIsEmpty.Error()))
+		respBytes := responseErrorWrapper{ErrMsg: errTitleIsEmpty.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
 		return
 	}
 
@@ -36,7 +37,8 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 	dateParse, err := time.Parse(domain.FormatDate, t.Date)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, "error of parse date"))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
 		return
 	}
 
@@ -48,7 +50,8 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 			nextDate, err := domain.NextDate(now, t.Date, t.Repeat)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+				respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+				fmt.Fprintln(w, string(respBytes))
 				return
 			}
 			assignDateBuf = nextDate
@@ -59,16 +62,19 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 	resultId, err := h.repo.AddTask(t)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
 		return
 	}
-
 	res := struct {
 		Id int `json:"id"`
 	}{Id: resultId}
 	result, err := json.Marshal(res)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(result)

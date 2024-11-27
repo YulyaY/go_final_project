@@ -17,7 +17,8 @@ func (h *Handler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	tasks, err := h.repo.GetTasks()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
 		return
 	}
 
@@ -25,13 +26,17 @@ func (h *Handler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(resultToSerialize)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(resp)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
+		return
 	}
 }

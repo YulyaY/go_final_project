@@ -12,7 +12,7 @@ const (
 )
 
 var ErrRepeatIsEmpty error = errors.New("repeat is empty")
-var errWrongFormat error = errors.New("repeat has wrong format")
+var ErrWrongFormat error = errors.New("repeat has wrong format")
 var errIsExceed error = errors.New("repeat is maximum permissible interval has been exceeded")
 
 var nextDate time.Time
@@ -31,7 +31,7 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 	if repeatSlice[0] == "d" && len(repeatSlice) == 2 {
 		repeatDays, err := strconv.Atoi(repeatSlice[1])
 		if err != nil {
-			return "", errWrongFormat
+			return "", ErrWrongFormat
 		}
 		if repeatDays > 400 {
 			return "", errIsExceed
@@ -43,7 +43,7 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 		return nextDateForOptionYear(now, dateParse)
 	}
 
-	return "", errWrongFormat
+	return "", ErrWrongFormat
 }
 
 func nextDateForOptionYear(now, dateParse time.Time) (string, error) {

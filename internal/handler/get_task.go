@@ -13,14 +13,23 @@ func (h *Handler) GetTask(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, "error of parse id"))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
 		return
 	}
 	task, err := h.repo.GetTask(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
+		return
+	}
 	taskToSerialize, err := json.Marshal(task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
+		fmt.Fprintln(w, string(respBytes))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
