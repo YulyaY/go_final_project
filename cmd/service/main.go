@@ -17,6 +17,7 @@ const (
 	dbName      = "scheduler.db"
 	webDir      = "./web"
 	portDefault = "7540"
+	envVarPort  = "TODO_PORT"
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 	r.Post("/api/task/done", handler.DoneTask)
 	r.Delete("/api/task", handler.DeleteTask)
 
-	port := os.Getenv("TODO_PORT")
+	port := os.Getenv(envVarPort)
 	if port != "" {
 		log.Printf("Server is going to start at http://localhost:%s\n", port)
 		if err := http.ListenAndServe(":"+port, r); err != nil {
