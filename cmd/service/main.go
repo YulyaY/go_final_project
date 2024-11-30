@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -15,8 +14,9 @@ import (
 )
 
 const (
-	dbName = "scheduler.db"
-	webDir = "./web"
+	dbName      = "scheduler.db"
+	webDir      = "./web"
+	portDefault = "7540"
 )
 
 func main() {
@@ -39,17 +39,19 @@ func main() {
 	r.Post("/api/task/done", handler.DoneTask)
 	r.Delete("/api/task", handler.DeleteTask)
 
-	fmt.Println("Server is going to start")
 	port := os.Getenv("TODO_PORT")
 	if port != "" {
+		log.Printf("Server is going to start at http://localhost:%s\n", port)
 		if err := http.ListenAndServe(":"+port, r); err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		if err := http.ListenAndServe(":7540", r); err != nil {
+		log.Printf("Server is going to start at http://localhost:%s\n", portDefault)
+		if err := http.ListenAndServe(":"+portDefault, r); err != nil {
 			log.Fatal(err)
 		}
 	}
+
 }
 
 func migration(rep *repository.Repository) {
@@ -57,7 +59,7 @@ func migration(rep *repository.Repository) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dbFile := filepath.Join(filepath.Dir(appPath), "scheduler.db")
+	dbFile := filepath.Join(filepath.Dir(appPath), dbName)
 	_, err = os.Stat(dbFile)
 
 	var install bool

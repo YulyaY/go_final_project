@@ -122,7 +122,6 @@ func TestEditTask(t *testing.T) {
 		}
 	}
 
-	fmt.Println("test update task id=", id)
 	updateTask(map[string]any{
 		"id":      id,
 		"date":    now.Format(`20060102`),

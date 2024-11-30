@@ -37,5 +37,5 @@ func (h *Handler) NextDate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(nextDate))
+	_, _ = w.Write([]byte(nextDate))
 }

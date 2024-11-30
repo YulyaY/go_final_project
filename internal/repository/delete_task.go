@@ -19,6 +19,5 @@ func (r *Repository) DeleteTask(id int) error {
 	if affectedCnt == 0 {
 		return errRecordDoesNotExists
 	}
-	fmt.Println(affectedCnt)
 	return nil
 }

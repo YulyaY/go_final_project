@@ -1,14 +1,17 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/YulyaY/go_final_project.git/internal/domain/model"
 )
 
+const limit = 20
+
 func (r *Repository) GetTasks() ([]model.Task, error) {
 	tasks := make([]model.Task, 0, 10)
-	res, err := r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT 10")
+	res, err := r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
 	if err != nil {
 		return tasks, fmt.Errorf("Repository.GetTasks select error: %w", err)
 	}

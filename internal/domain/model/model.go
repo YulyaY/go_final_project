@@ -7,7 +7,3 @@ type Task struct {
 	Comment string `json:"comment,omitempty"`
 	Repeat  string `json:"repeat,omitempty"`
 }
-
-func Make() Task {
-	return Task{}
-}

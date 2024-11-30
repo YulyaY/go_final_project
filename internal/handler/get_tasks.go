@@ -32,11 +32,5 @@ func (h *Handler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(resp)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
-		fmt.Fprintln(w, string(respBytes))
-		return
-	}
+	_, _ = w.Write(resp)
 }

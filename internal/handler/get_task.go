@@ -33,5 +33,5 @@ func (h *Handler) GetTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(taskToSerialize))
+	_, _ = w.Write(taskToSerialize)
 }
