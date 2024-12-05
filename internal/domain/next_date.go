@@ -116,7 +116,7 @@ func nextDateForOptionYear(now, dateParse time.Time) (string, error) {
 	} else {
 		nextDate = dateParse.AddDate(now.Year()-dateParse.Year()+1, 0, 0)
 	}
-	return format(nextDate), nil
+	return Format(nextDate), nil
 }
 
 func nextDateForOptionDay(now, dateParse time.Time, repeatDays int) (string, error) {
@@ -128,10 +128,10 @@ func nextDateForOptionDay(now, dateParse time.Time, repeatDays int) (string, err
 			nextDate = nextDate.AddDate(0, 0, repeatDays)
 		}
 	}
-	return format(nextDate), nil
+	return Format(nextDate), nil
 }
 
-func format(nextDate time.Time) string {
+func Format(nextDate time.Time) string {
 	return nextDate.Format(FormatDate)
 }
 
@@ -151,22 +151,22 @@ func nextDateForOptionWeek(now, dateParse time.Time, repeatDays []int) (string, 
 		dateParseWeekDay := int(dateParse.Weekday())
 		if dateParseWeekDay == 0 {
 			nextDate = dateParse.AddDate(0, 0, repeatDays[0])
-			return format(nextDate), nil
+			return Format(nextDate), nil
 		}
 		for _, day := range repeatDays {
 			if dateParseWeekDay < day {
 				nextDate = dateParse.AddDate(0, 0, day-dateParseWeekDay)
-				return format(nextDate), nil
+				return Format(nextDate), nil
 			}
 		}
 		nextDate = dateParse.AddDate(0, 0, 7-dateParseWeekDay+repeatDays[0])
-		return format(nextDate), nil
+		return Format(nextDate), nil
 	} else {
 		nextDate = now
 		nextDateWeekDay := int(nextDate.Weekday())
 		if nextDateWeekDay == 0 {
 			nextDate = nextDate.AddDate(0, 0, repeatDays[0])
-			return format(nextDate), nil
+			return Format(nextDate), nil
 		}
 		nextDateWeekDayBeforeDay := false
 		var dayOne int
@@ -182,7 +182,7 @@ func nextDateForOptionWeek(now, dateParse time.Time, repeatDays []int) (string, 
 		} else {
 			nextDate = nextDate.AddDate(0, 0, 7-nextDateWeekDay+repeatDays[0])
 		}
-		return format(nextDate), nil
+		return Format(nextDate), nil
 	}
 }
 
@@ -200,35 +200,35 @@ func nextDateForOptionMonth(now, dateParse time.Time, repeatDays, repeatMonth []
 					if day > 0 {
 						nextDate = time.Date(dateYear, time.Month(month), repeatDays[0], 0, 0, 0, 0, time.UTC)
 						if nextDate.Day() == repeatDays[0] {
-							return format(nextDate), nil
+							return Format(nextDate), nil
 						}
 					}
 				}
 				nextDate = time.Date(dateYear, time.Month(month)+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-				return format(nextDate), nil
+				return Format(nextDate), nil
 			}
 			if dateMonth == time.Month(month) {
 				for _, day := range repeatDays {
 					if dateDay < day {
 						nextDate = time.Date(dateYear, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 						if nextDate.Day() == day {
-							return format(nextDate), nil
+							return Format(nextDate), nil
 						}
 					}
 				}
 				if repeatDays[0] < 0 {
 					nextDate = time.Date(dateYear, time.Month(month)+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-					return format(nextDate), nil
+					return Format(nextDate), nil
 				}
 			}
 		}
 		if repeatDays[0] < 0 {
 			nextDate = time.Date(dateYear+1, time.Month(repeatMonth[0])+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-			return format(nextDate), nil
+			return Format(nextDate), nil
 		}
 		nextDate = time.Date(dateYear+1, time.Month(repeatMonth[0]), repeatDays[0], 0, 0, 0, 0, time.UTC)
 		if nextDate.Day() == repeatDays[0] {
-			return format(nextDate), nil
+			return Format(nextDate), nil
 		} else {
 			return "", ErrWrongFormat
 		}
@@ -244,35 +244,35 @@ func nextDateForOptionMonth(now, dateParse time.Time, repeatDays, repeatMonth []
 				if day > 0 {
 					nextDate = time.Date(nextDateYear, time.Month(month), repeatDays[0], 0, 0, 0, 0, time.UTC)
 					if nextDate.Day() == repeatDays[0] {
-						return format(nextDate), nil
+						return Format(nextDate), nil
 					}
 				}
 			}
 			nextDate = time.Date(nextDateYear, time.Month(month)+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-			return format(nextDate), nil
+			return Format(nextDate), nil
 		}
 		if nextDateMonth == time.Month(month) {
 			for _, day := range repeatDays {
 				if nextDateDay < day {
 					nextDate = time.Date(nextDateYear, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 					if nextDate.Day() == day {
-						return format(nextDate), nil
+						return Format(nextDate), nil
 					}
 				}
 			}
 			if repeatDays[0] < 0 {
 				nextDate = time.Date(nextDateYear, time.Month(month)+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-				return format(nextDate), nil
+				return Format(nextDate), nil
 			}
 		}
 	}
 	if repeatDays[0] < 0 {
 		nextDate = time.Date(nextDateYear+1, time.Month(repeatMonth[0])+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-		return format(nextDate), nil
+		return Format(nextDate), nil
 	}
 	nextDate = time.Date(nextDateYear+1, time.Month(repeatMonth[0]), repeatDays[0], 0, 0, 0, 0, nil)
 	if nextDate.Day() == repeatDays[0] {
-		return format(nextDate), nil
+		return Format(nextDate), nil
 	} else {
 		return "", ErrWrongFormat
 	}
@@ -290,17 +290,17 @@ func nextDateForOptionMonthOnlyDay(now, dateParse time.Time, repeatDays []int) (
 			if dateDay < day {
 				nextDate = time.Date(dateYear, dateMonth, day, 0, 0, 0, 0, time.UTC)
 				if nextDate.Day() == day {
-					return format(nextDate), nil
+					return Format(nextDate), nil
 				}
 			}
 		}
 		if repeatDays[0] < 0 {
 			nextDate = time.Date(dateYear, dateMonth+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-			return format(nextDate), nil
+			return Format(nextDate), nil
 		} else {
 			nextDate = time.Date(dateYear, dateMonth+1, repeatDays[0], 0, 0, 0, 0, time.UTC)
 			if nextDate.Day() == repeatDays[0] {
-				return format(nextDate), nil
+				return Format(nextDate), nil
 			} else {
 				return "", ErrWrongFormat
 			}
@@ -315,17 +315,17 @@ func nextDateForOptionMonthOnlyDay(now, dateParse time.Time, repeatDays []int) (
 		if nextDateDay < day {
 			nextDate = time.Date(nextDateYear, nextDateMonth, repeatDays[0], 0, 0, 0, 0, time.UTC)
 			if nextDate.Day() == repeatDays[0] {
-				return format(nextDate), nil
+				return Format(nextDate), nil
 			}
 		}
 	}
 	if repeatDays[0] < 0 {
 		nextDate = time.Date(nextDateYear, nextDateMonth+1, repeatDays[0]+1, 0, 0, 0, 0, time.UTC)
-		return format(nextDate), nil
+		return Format(nextDate), nil
 	} else {
 		nextDate = time.Date(nextDateYear, nextDateMonth+1, repeatDays[0], 0, 0, 0, 0, time.UTC)
 		if nextDate.Day() == repeatDays[0] {
-			return format(nextDate), nil
+			return Format(nextDate), nil
 		} else {
 			return "", ErrWrongFormat
 		}

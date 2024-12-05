@@ -14,7 +14,9 @@ type GetTasksResp struct {
 
 func (h *Handler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	tasks, err := h.repo.GetTasks()
+	search := r.FormValue("search")
+
+	tasks, err := h.repo.GetTasks(search)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()

@@ -17,7 +17,7 @@ const (
 	dbName      = "scheduler.db"
 	webDir      = "./web"
 	portDefault = "7540"
-	envVarPort  = "TODO_PORT"
+	envPort     = "TODO_PORT"
 )
 
 func main() {
@@ -27,20 +27,25 @@ func main() {
 	repo := repository.New(db)
 	migration(repo)
 
-	handler := handler.New(repo)
+	handlers := handler.New(repo)
 
 	r := chi.NewRouter()
 	r.Handle("/*", http.FileServer(http.Dir(webDir)))
 
-	r.Get("/api/nextdate", handler.NextDate)
-	r.Post("/api/task", handler.AddTask)
-	r.Get("/api/tasks", handler.GetTasks)
-	r.Get("/api/task", handler.GetTask)
-	r.Put("/api/task", handler.UpdateTask)
-	r.Post("/api/task/done", handler.DoneTask)
-	r.Delete("/api/task", handler.DeleteTask)
+	r.Post("/api/signin", handlers.Signin)
+	r.Get("/api/nextdate", handlers.NextDate)
+	r.Group(func(r chi.Router) {
+		r.Use(handler.AuthMiddleware)
 
-	port := os.Getenv(envVarPort)
+		r.Post("/api/task", handlers.AddTask)
+		r.Get("/api/tasks", handlers.GetTasks)
+		r.Get("/api/task", handlers.GetTask)
+		r.Put("/api/task", handlers.UpdateTask)
+		r.Post("/api/task/done", handlers.DoneTask)
+		r.Delete("/api/task", handlers.DeleteTask)
+	})
+
+	port := os.Getenv(envPort)
 	if port != "" {
 		log.Printf("Server is going to start at http://localhost:%s\n", port)
 		if err := http.ListenAndServe(":"+port, r); err != nil {
@@ -52,7 +57,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-
 }
 
 func migration(rep *repository.Repository) {
