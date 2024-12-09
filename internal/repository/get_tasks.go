@@ -3,38 +3,34 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
-	"github.com/YulyaY/go_final_project.git/internal/domain"
 	"github.com/YulyaY/go_final_project.git/internal/domain/model"
 )
 
-const (
-	limit               = 20
-	FormatDateForSearch = "02.01.2006"
-)
-
-func (r *Repository) GetTasks(search string) ([]model.Task, error) {
+func (r *Repository) GetTasks(taskFilter model.GetTaskFilter, limit int) ([]model.Task, error) {
 	tasks := make([]model.Task, 0, 10)
 	var res *sql.Rows
 	var err error
-	if search != "" {
-		searchDate, errDateParse := time.Parse(FormatDateForSearch, search)
-		var date string
-		if errDateParse != nil {
-			search = fmt.Sprintf("%%%s%%", search)
-			res, err = r.db.Query("SELECT * FROM scheduler WHERE title LIKE :search OR comment LIKE :search ORDER BY date LIMIT :limit",
-				sql.Named("search", search),
-				sql.Named("limit", limit))
-		} else {
-			date = domain.Format(searchDate)
-			res, err = r.db.Query("SELECT * FROM scheduler WHERE date = :date ORDER BY date LIMIT :limit",
-				sql.Named("date", date),
-				sql.Named("limit", limit))
-		}
+	if taskFilter.DateFilter != nil {
+		res, err = r.db.Query("SELECT * FROM scheduler WHERE date = $1 ORDER BY date LIMIT $2",
+			*taskFilter.DateFilter, limit)
+
+		// res, err = r.db.Query("SELECT * FROM scheduler WHERE date = :date ORDER BY date LIMIT :limit",
+		// 	sql.Named("date", *taskFilter.DateFilter),
+		// 	sql.Named("limit", limit))
+	} else if taskFilter.TitleFilter != nil {
+		res, err = r.db.Query("SELECT * FROM scheduler WHERE title LIKE $1 OR comment LIKE $1 ORDER BY date LIMIT $2",
+			*taskFilter.TitleFilter, limit)
+
+		// res, err = r.db.Query("SELECT * FROM scheduler WHERE title LIKE :search OR comment LIKE :search ORDER BY date LIMIT :limit",
+		// 	sql.Named("search", *taskFilter.TitleFilter),
+		// 	sql.Named("limit", limit))
 	} else {
-		res, err = r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
+		res, err = r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT $1", limit)
+
+		//res, err = r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
 	}
+
 	if err != nil {
 		return tasks, fmt.Errorf("Repository.GetTasks select error: %w", err)
 	}

@@ -5,12 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/YulyaY/go_final_project.git/internal/config"
+	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,6 +36,13 @@ func requestJSON(apipath string, values map[string]any, method string) ([]byte, 
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+
+	appConfig, err := config.LoadAppConfig()
+	if err != nil {
+		log.Fatalf("Can not set config: '%s'", err.Error())
+	}
+
+	Token := createJwtToken(appConfig.Secret)
 
 	client := &http.Client{}
 	if len(Token) > 0 {
@@ -136,7 +146,8 @@ func TestAddTask(t *testing.T) {
 			}
 			id := fmt.Sprint(mid)
 
-			err = db.Get(&task, `SELECT * FROM scheduler WHERE id=?`, id)
+			err = db.Get(&task, `SELECT * FROM scheduler WHERE id=$1`, id)
+			//err = db.Get(&task, `SELECT * FROM scheduler WHERE id=?`, id)
 			assert.NoError(t, err)
 			assert.Equal(t, id, strconv.FormatInt(task.ID, 10))
 

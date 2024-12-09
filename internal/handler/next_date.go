@@ -5,31 +5,25 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/YulyaY/go_final_project.git/internal/domain"
+	"github.com/YulyaY/go_final_project.git/internal/domain/service"
 )
 
-type NextDate struct {
-	Now    time.Time `json:"now"`
-	Date   string    `json:"date"`
-	Repeat string    `json:"repeat"`
-}
-
 func (h *Handler) NextDate(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(contentType, valueJson)
 	var nextDateStruct NextDate
-	nowString := r.FormValue("now")
+	nowString := r.FormValue(valueNow)
 	var err error
-	nextDateStruct.Now, err = time.Parse(domain.FormatDate, nowString)
+	nextDateStruct.Now, err = time.Parse(formatDate, nowString)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
 		fmt.Fprintln(w, string(respBytes))
 		return
 	}
-	nextDateStruct.Date = r.FormValue("date")
-	nextDateStruct.Repeat = r.FormValue("repeat")
+	nextDateStruct.Date = r.FormValue(valueDate)
+	nextDateStruct.Repeat = r.FormValue(valueRepeat)
 
-	nextDate, err := domain.NextDate(nextDateStruct.Now, nextDateStruct.Date, nextDateStruct.Repeat)
+	nextDate, err := service.NextDate(nextDateStruct.Now, nextDateStruct.Date, nextDateStruct.Repeat)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
