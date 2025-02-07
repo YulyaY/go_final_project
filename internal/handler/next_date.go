@@ -19,7 +19,7 @@ func (h *Handler) NextDate(w http.ResponseWriter, r *http.Request) {
 	var nextDateStruct NextDate
 	nowString := r.FormValue("now")
 	var err error
-	nextDateStruct.Now, err = time.Parse(domain.FormatDate, nowString)
+	nextDateStruct.Now, err = time.Parse(formatDate, nowString)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()

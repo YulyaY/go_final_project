@@ -3,9 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 
+	"github.com/YulyaY/go_final_project.git/internal/config"
 	"github.com/YulyaY/go_final_project.git/internal/db"
 	"github.com/YulyaY/go_final_project.git/internal/handler"
 	"github.com/YulyaY/go_final_project.git/internal/repository"
@@ -21,12 +20,18 @@ const (
 )
 
 func main() {
-	db := db.New()
+	appConfig, err := config.LoadAppConfig()
+	if err != nil {
+		log.Fatalf("Can not set config: '%s'", err.Error())
+	}
+
+	db, err := db.New(appConfig.DbFilePath)
+	if err != nil {
+		log.Fatalf("Can not init db connect or create datebase: '%s'", err.Error())
+	}
 	defer db.Close()
 
 	repo := repository.New(db)
-	migration(repo)
-
 	handlers := handler.New(repo)
 
 	r := chi.NewRouter()
@@ -45,36 +50,9 @@ func main() {
 		r.Delete("/api/task", handlers.DeleteTask)
 	})
 
-	port := os.Getenv(envPort)
-	if port != "" {
-		log.Printf("Server is going to start at http://localhost:%s\n", port)
-		if err := http.ListenAndServe(":"+port, r); err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		log.Printf("Server is going to start at http://localhost:%s\n", portDefault)
-		if err := http.ListenAndServe(":"+portDefault, r); err != nil {
-			log.Fatal(err)
-		}
-	}
-}
-
-func migration(rep *repository.Repository) {
-	appPath, err := os.Executable()
-	if err != nil {
+	log.Printf("Server is going to start at 0.0.0.0:%s\n", appConfig.Port)
+	if err := http.ListenAndServe(":"+appConfig.Port, r); err != nil {
 		log.Fatal(err)
 	}
-	dbFile := filepath.Join(filepath.Dir(appPath), dbName)
-	_, err = os.Stat(dbFile)
 
-	var install bool
-	if err != nil {
-		install = true
-	}
-
-	if install {
-		if err := rep.CreateScheduler(); err != nil {
-			log.Fatal(err)
-		}
-	}
 }

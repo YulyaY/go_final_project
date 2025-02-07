@@ -15,7 +15,7 @@ var errTitleIsEmpty error = errors.New("title is empty")
 
 func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var t model.Task
+	var t model.Task // вызвать т реквест
 	now := time.Now()
 	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -24,6 +24,7 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// этот иф в домэйн
 	if t.Title == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: errTitleIsEmpty.Error()}.jsonBytes()
@@ -31,10 +32,13 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// здесь
 	if t.Date == "" {
-		t.Date = now.Format(domain.FormatDate)
+		t.Date = now.Format(formatDate)
 	}
-	dateParse, err := time.Parse(domain.FormatDate, t.Date)
+
+	// парс здесь
+	dateParse, err := time.Parse(formatDate, t.Date)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
@@ -42,10 +46,18 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	domain.AddTask(
+		model.Task{
+			Date: dateParse.Format(domain.FormatDate),
+			// ....
+		}
+	)
+
+	// домэйн
 	if !dateParse.After(now) && domain.IsDateNotTheSameDayAsNow(now, dateParse) {
 		var assignDateBuf string
 		if t.Repeat == "" {
-			assignDateBuf = now.Format(domain.FormatDate)
+			assignDateBuf = now.Format(formatDate)
 		} else {
 			nextDate, err := domain.NextDate(now, t.Date, t.Repeat)
 			if err != nil {
@@ -59,16 +71,19 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 		t.Date = assignDateBuf
 	}
 
-	resultId, err := h.repo.AddTask(t)
+	// новая переменная т домэйн
+	// и присвоить т домэйн значения атрибутов т реквест
+
+	resultId, err := h.repo.AddTask(t) // обращение к domain
+
+	//это остается
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
 		fmt.Fprintln(w, string(respBytes))
 		return
 	}
-	res := struct {
-		Id int `json:"id"`
-	}{Id: resultId}
+	res := result{Id: resultId}
 	result, err := json.Marshal(res)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

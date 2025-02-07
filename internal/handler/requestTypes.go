@@ -1,6 +1,6 @@
-package model
+package handler
 
-type Task struct {
+type requestTask struct {
 	Id      string `json:"id,omitempty"`
 	Date    string `json:"date,omitempty"`
 	Title   string `json:"title,omitempty"`
@@ -8,7 +8,10 @@ type Task struct {
 	Repeat  string `json:"repeat,omitempty"`
 }
 
-type GetTaskFilter struct {
-	TitleFilter *string
-	DateFilter  *string
+type result struct {
+	Id int `json:"id"`
 }
+
+const (
+	formatDate = "20060102"
+)

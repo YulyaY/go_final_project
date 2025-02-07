@@ -45,9 +45,9 @@ func (h *Handler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if t.Date == "" {
-		t.Date = now.Format(domain.FormatDate)
+		t.Date = now.Format(formatDate)
 	}
-	dateParse, err := time.Parse(domain.FormatDate, t.Date)
+	dateParse, err := time.Parse(formatDate, t.Date)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
@@ -58,7 +58,7 @@ func (h *Handler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	if !dateParse.After(now) && domain.IsDateNotTheSameDayAsNow(now, dateParse) {
 		var assignDateBuf string
 		if t.Repeat == "" {
-			assignDateBuf = now.Format(domain.FormatDate)
+			assignDateBuf = now.Format(formatDate)
 		} else {
 			nextDate, err := domain.NextDate(now, t.Date, t.Repeat)
 			if err != nil {

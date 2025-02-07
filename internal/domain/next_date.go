@@ -22,7 +22,7 @@ var errIsInvalidValueMonth error = errors.New("invalid value for month")
 var nextDate time.Time
 
 func NextDate(now time.Time, date string, repeat string) (string, error) {
-	dateParse, err := time.Parse(FormatDate, date)
+	dateParse, err := time.Parse(formatDate, date)
 	if err != nil {
 		return "", err
 	}
@@ -132,7 +132,7 @@ func nextDateForOptionDay(now, dateParse time.Time, repeatDays int) (string, err
 }
 
 func Format(nextDate time.Time) string {
-	return nextDate.Format(FormatDate)
+	return nextDate.Format(formatDate)
 }
 
 func IsDateNotTheSameDayAsNow(now, dateParse time.Time) bool {
