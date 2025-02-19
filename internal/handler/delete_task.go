@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/YulyaY/go_final_project.git/internal/domain/model"
 )
 
 func (h *Handler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	var id int
-	w.Header().Set("Content-Type", "application/json")
-	id, err := strconv.Atoi(r.FormValue("id"))
+	w.Header().Set(contentType, valueJson)
+	id, err := strconv.Atoi(r.FormValue(valueId))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
@@ -26,14 +24,14 @@ func (h *Handler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	errOfDeleteTask := h.repo.DeleteTask(id)
+	errOfDeleteTask := h.service.DeleteTask(id)
 	if errOfDeleteTask != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: errOfDeleteTask.Error()}.jsonBytes()
 		fmt.Fprintln(w, string(respBytes))
 		return
 	}
-	result, err := json.Marshal(model.Task{})
+	result, err := json.Marshal(requestTask{})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()

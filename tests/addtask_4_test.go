@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/YulyaY/go_final_project.git/internal/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,6 +35,13 @@ func requestJSON(apipath string, values map[string]any, method string) ([]byte, 
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+
+	appConfig, err := config.LoadAppConfig()
+	if err != nil {
+		log.Fatalf("Can not set config: '%s'", err.Error())
+	}
+
+	Token := createJwtToken(appConfig.Secret)
 
 	client := &http.Client{}
 	if len(Token) > 0 {

@@ -3,6 +3,8 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/YulyaY/go_final_project.git/internal/domain/service"
 )
 
 func (r *Repository) DeleteTask(id int) error {
@@ -17,7 +19,7 @@ func (r *Repository) DeleteTask(id int) error {
 		return fmt.Errorf("Repository.DeleteTask delete error: %w", err)
 	}
 	if affectedCnt == 0 {
-		return errRecordDoesNotExists
+		return service.ErrRecordDoesNotExists
 	}
 	return nil
 }

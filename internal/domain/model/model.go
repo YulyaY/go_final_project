@@ -1,9 +1,15 @@
 package model
 
 type Task struct {
-	Id      string `json:"id,omitempty"`
-	Date    string `json:"date,omitempty"`
-	Title   string `json:"title,omitempty"`
-	Comment string `json:"comment,omitempty"`
-	Repeat  string `json:"repeat,omitempty"`
+	Id      string
+	Date    string
+	Title   string
+	Comment string
+	Repeat  string
+}
+
+type GetTaskFilter struct {
+	TitleFilter *string
+	DateFilter  *string
+
 }

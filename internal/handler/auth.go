@@ -2,37 +2,33 @@ package handler
 
 import (
 	"net/http"
-	"os"
-
-	"github.com/golang-jwt/jwt"
+	"github.com/YulyaY/go_final_project.git/internal/app"
+	"github.com/YulyaY/go_final_project.git/internal/config"
+	"github.com/YulyaY/go_final_project.git/internal/domain/pkg"
 )
 
-const (
-	envPassword = "TODO_PASSWORD"
-)
+func BuildAuthMiddleware(appConfig config.AppConfig, appSettings app.AppSettings) func(http.Handler) http.Handler {
+	middlewareFunc := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-func AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		pass := os.Getenv(envPassword)
-		if len(pass) > 0 {
-			var jwtT string
-			cookie, err := r.Cookie("token")
-			if err == nil {
-				jwtT = cookie.Value
+			if appSettings.IsAuthentificationControlSwitchedOn {
+				var jwtT string
+				cookie, err := r.Cookie(valueToken)
+				if err == nil {
+					jwtT = cookie.Value
+					//tests.Token = jwtT
+				}
+
+				errOfValidJwtToken := pkg.CreateJwtToken(jwtT, appConfig.Secret)
+				if errOfValidJwtToken != nil {
+					http.Error(w, err.Error(), http.StatusUnauthorized)
+					return
+				}
 			}
 
-			jwtToken, err := jwt.Parse(jwtT, func(t *jwt.Token) (interface{}, error) {
-				return []byte(secret), nil
-			})
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusUnauthorized)
-				return
-			}
-			if !jwtToken.Valid {
-				http.Error(w, "Authentification required", http.StatusUnauthorized)
-				return
-			}
-		}
-		next.ServeHTTP(w, r.WithContext(r.Context()))
-	})
+			next.ServeHTTP(w, r.WithContext(r.Context()))
+		})
+	}
+
+	return middlewareFunc
 }
