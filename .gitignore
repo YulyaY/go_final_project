@@ -1,7 +1,9 @@
 main
+
 main.exe
 bin/*
 .vscode
 scheduler.db
 todo
 mmg
+

@@ -15,23 +15,27 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 	var reqT requestTask
 	now := time.Now()
 	if err := json.NewDecoder(r.Body).Decode(&reqT); err != nil {
+
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
 		fmt.Fprintln(w, string(respBytes))
 		return
 	}
+
 
 	if reqT.Date == "" {
 		reqT.Date = now.Format(formatDate)
 	}
 
 	dateParse, err := time.Parse(formatDate, reqT.Date)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		respBytes := responseErrorWrapper{ErrMsg: err.Error()}.jsonBytes()
 		fmt.Fprintln(w, string(respBytes))
 		return
 	}
+
 
 	resultId, err := h.service.AddTask(
 		model.Task{
@@ -41,6 +45,7 @@ func (h *Handler) AddTask(w http.ResponseWriter, r *http.Request) {
 			Comment: reqT.Comment,
 			Repeat:  reqT.Repeat,
 		})
+
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

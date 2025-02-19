@@ -2,10 +2,13 @@ package db
 
 import (
 	"database/sql"
+
 	"os"
+
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
 
 const (
 	dbAdapterName = "sqlite3"
@@ -41,4 +44,5 @@ func CreateDb(dbFilePath string) (*sql.DB, error) {
 	}
 
 	return db, nil
+
 }

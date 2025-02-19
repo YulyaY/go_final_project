@@ -11,4 +11,5 @@ type Task struct {
 type GetTaskFilter struct {
 	TitleFilter *string
 	DateFilter  *string
+
 }
