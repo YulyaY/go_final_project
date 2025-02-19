@@ -2,13 +2,11 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/YulyaY/go_final_project.git/internal/domain/model"
+	"github.com/YulyaY/go_final_project.git/internal/domain/service"
 )
-
-var errRecordDoesNotExists error = errors.New("record does not exists")
 
 func (r *Repository) UpdateTask(t model.Task) error {
 	sqlResult, err := r.db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat  WHERE id = :id",
@@ -26,7 +24,7 @@ func (r *Repository) UpdateTask(t model.Task) error {
 		return fmt.Errorf("Repository.UpdateTask update error: %w", err)
 	}
 	if affectedCnt == 0 {
-		return errRecordDoesNotExists
+		return service.ErrRecordDoesNotExists
 	}
 	return nil
 }

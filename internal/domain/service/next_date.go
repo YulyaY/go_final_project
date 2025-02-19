@@ -1,7 +1,6 @@
-package domain
+package service
 
 import (
-	"errors"
 	"sort"
 	"strconv"
 	"strings"
@@ -12,17 +11,10 @@ const (
 	FormatDate = "20060102"
 )
 
-var ErrRepeatIsEmpty error = errors.New("repeat is empty")
-var ErrWrongFormat error = errors.New("repeat has wrong format")
-var errIsExceed error = errors.New("repeat is maximum permissible interval has been exceeded")
-var errIsInvalidValueDayOfWeek error = errors.New("invalid value for day of the week")
-var errIsInvalidValueDayOfMonth error = errors.New("invalid value for day of the month")
-var errIsInvalidValueMonth error = errors.New("invalid value for month")
-
 var nextDate time.Time
 
 func NextDate(now time.Time, date string, repeat string) (string, error) {
-	dateParse, err := time.Parse(formatDate, date)
+	dateParse, err := time.Parse(FormatDate, date)
 	if err != nil {
 		return "", err
 	}
@@ -132,7 +124,7 @@ func nextDateForOptionDay(now, dateParse time.Time, repeatDays int) (string, err
 }
 
 func Format(nextDate time.Time) string {
-	return nextDate.Format(formatDate)
+	return nextDate.Format(FormatDate)
 }
 
 func IsDateNotTheSameDayAsNow(now, dateParse time.Time) bool {

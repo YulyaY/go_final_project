@@ -2,13 +2,10 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/YulyaY/go_final_project.git/internal/domain/model"
 )
-
-var errIdIsNotFound error = errors.New("select by id: id is not found")
 
 func (r *Repository) GetTask(id int) (model.Task, error) {
 	var t model.Task

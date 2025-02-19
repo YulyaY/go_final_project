@@ -4,8 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/YulyaY/go_final_project.git/internal/app"
 	"github.com/YulyaY/go_final_project.git/internal/config"
 	"github.com/YulyaY/go_final_project.git/internal/db"
+	"github.com/YulyaY/go_final_project.git/internal/domain/service"
 	"github.com/YulyaY/go_final_project.git/internal/handler"
 	"github.com/YulyaY/go_final_project.git/internal/repository"
 	"github.com/go-chi/chi"
@@ -25,6 +27,10 @@ func main() {
 		log.Fatalf("Can not set config: '%s'", err.Error())
 	}
 
+	appSetting := app.AppSettings{
+		IsAuthentificationControlSwitchedOn: appConfig.IsPasswordSet(),
+	}
+
 	db, err := db.New(appConfig.DbFilePath)
 	if err != nil {
 		log.Fatalf("Can not init db connect or create datebase: '%s'", err.Error())
@@ -32,7 +38,8 @@ func main() {
 	defer db.Close()
 
 	repo := repository.New(db)
-	handlers := handler.New(repo)
+	svc := service.New(repo)
+	handlers := handler.New(svc, appConfig)
 
 	r := chi.NewRouter()
 	r.Handle("/*", http.FileServer(http.Dir(webDir)))
@@ -40,7 +47,7 @@ func main() {
 	r.Post("/api/signin", handlers.Signin)
 	r.Get("/api/nextdate", handlers.NextDate)
 	r.Group(func(r chi.Router) {
-		r.Use(handler.AuthMiddleware)
+		r.Use(handler.BuildAuthMiddleware(appConfig, appSetting))
 
 		r.Post("/api/task", handlers.AddTask)
 		r.Get("/api/tasks", handlers.GetTasks)
