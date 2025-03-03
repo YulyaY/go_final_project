@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/joho/godotenv"
 	"github.com/sethvargo/go-envconfig"
@@ -27,8 +28,8 @@ var errNoEnvSecret error = errors.New("no specified environment variable TODO_SE
 func LoadAppConfig() (AppConfig, error) {
 	ctx := context.Background()
 	err := godotenv.Load()
-	if err != nil {
-		return AppConfig{}, err
+	if err == nil {
+		log.Println("env variables loaded from .env file")
 	}
 
 	var appConfig AppConfig
