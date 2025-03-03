@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/YulyaY/go_final_project.git/internal/config"
+	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -145,7 +146,8 @@ func TestAddTask(t *testing.T) {
 			}
 			id := fmt.Sprint(mid)
 
-			err = db.Get(&task, `SELECT * FROM scheduler WHERE id=?`, id)
+			err = db.Get(&task, `SELECT * FROM scheduler WHERE id=$1`, id)
+			//err = db.Get(&task, `SELECT * FROM scheduler WHERE id=?`, id)
 			assert.NoError(t, err)
 			assert.Equal(t, id, strconv.FormatInt(task.ID, 10))
 

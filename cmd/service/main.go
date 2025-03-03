@@ -16,10 +16,7 @@ import (
 )
 
 const (
-	dbName      = "scheduler.db"
-	webDir      = "./web"
-	portDefault = "7540"
-	envPort     = "TODO_PORT"
+	webDir = "./web"
 )
 
 func main() {
@@ -33,7 +30,8 @@ func main() {
 		IsAuthentificationControlSwitchedOn: appConfig.IsPasswordSet(),
 	}
 
-	db, err := db.New(appConfig.DbFilePath)
+	//db, err := db.New(appConfig.DbFilePath)
+	db, err := db.NewPosgres(appConfig)
 	if err != nil {
 		log.Fatalf("Can not init db connect or create datebase: '%s'", err.Error())
 	}
@@ -43,16 +41,13 @@ func main() {
 	svc := service.New(repo)
 	handlers := handler.New(svc, appConfig)
 
-
 	r := chi.NewRouter()
 	r.Handle("/*", http.FileServer(http.Dir(webDir)))
 
 	r.Post("/api/signin", handlers.Signin)
 	r.Get("/api/nextdate", handlers.NextDate)
 	r.Group(func(r chi.Router) {
-    
 		r.Use(handler.BuildAuthMiddleware(appConfig, appSetting))
-
 
 		r.Post("/api/task", handlers.AddTask)
 		r.Get("/api/tasks", handlers.GetTasks)

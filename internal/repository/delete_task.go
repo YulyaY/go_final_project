@@ -1,15 +1,16 @@
 package repository
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/YulyaY/go_final_project.git/internal/domain/service"
 )
 
 func (r *Repository) DeleteTask(id int) error {
-	sqlResult, err := r.db.Exec("DELETE FROM scheduler WHERE id = :id",
-		sql.Named("id", id))
+
+	sqlResult, err := r.db.Exec("DELETE FROM scheduler WHERE id = $1", id)
+	// sqlResult, err := r.db.Exec("DELETE FROM scheduler WHERE id = :id",
+	// 	sql.Named("id", id))
 	if err != nil {
 		return fmt.Errorf("Repository.DeleteTask delete error: %w", err)
 	}

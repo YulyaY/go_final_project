@@ -7,3 +7,5 @@ run:
 test:
 	go test ./tests
 
+migrate:
+	go run cmd/migrate/migrate.go

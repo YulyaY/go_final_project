@@ -12,15 +12,23 @@ func (r *Repository) GetTasks(taskFilter model.GetTaskFilter, limit int) ([]mode
 	var res *sql.Rows
 	var err error
 	if taskFilter.DateFilter != nil {
-		res, err = r.db.Query("SELECT * FROM scheduler WHERE date = :date ORDER BY date LIMIT :limit",
-			sql.Named("date", *taskFilter.DateFilter),
-			sql.Named("limit", limit))
+		res, err = r.db.Query("SELECT * FROM scheduler WHERE date = $1 ORDER BY date LIMIT $2",
+			*taskFilter.DateFilter, limit)
+
+		// res, err = r.db.Query("SELECT * FROM scheduler WHERE date = :date ORDER BY date LIMIT :limit",
+		// 	sql.Named("date", *taskFilter.DateFilter),
+		// 	sql.Named("limit", limit))
 	} else if taskFilter.TitleFilter != nil {
-		res, err = r.db.Query("SELECT * FROM scheduler WHERE title LIKE :search OR comment LIKE :search ORDER BY date LIMIT :limit",
-			sql.Named("search", *taskFilter.TitleFilter),
-			sql.Named("limit", limit))
+		res, err = r.db.Query("SELECT * FROM scheduler WHERE title LIKE $1 OR comment LIKE $1 ORDER BY date LIMIT $2",
+			*taskFilter.TitleFilter, limit)
+
+		// res, err = r.db.Query("SELECT * FROM scheduler WHERE title LIKE :search OR comment LIKE :search ORDER BY date LIMIT :limit",
+		// 	sql.Named("search", *taskFilter.TitleFilter),
+		// 	sql.Named("limit", limit))
 	} else {
-		res, err = r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
+		res, err = r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT $1", limit)
+
+		//res, err = r.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
 	}
 
 	if err != nil {

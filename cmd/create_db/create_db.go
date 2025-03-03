@@ -13,7 +13,7 @@ func main() {
 		log.Fatalf("Can not set config: '%s'", err.Error())
 	}
 
-	db, err := db.CreateDb(appConfig.DbFilePath)
+	db, err := db.CreateDbPostgres(appConfig)
 	if err != nil {
 		log.Fatalf("Can not create datebase: '%s'", err.Error())
 	}
