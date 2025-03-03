@@ -33,5 +33,3 @@ func BuildAuthMiddleware(appConfig config.AppConfig, appSettings app.AppSettings
 
 	return middlewareFunc
 }
-
-//

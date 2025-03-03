@@ -30,7 +30,6 @@ func main() {
 	// if err := goose.SetDialect("sqlite3"); err != nil {
 	// 	log.Fatalf("Goose can not init connect to datebase: '%s'", err.Error())
 	// }
-
 	if err := goose.SetDialect("postgres"); err != nil {
 		log.Fatalf("Goose can not init connect to datebase: '%s'", err.Error())
 	}

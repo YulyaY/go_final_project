@@ -8,6 +8,7 @@ import (
 	"github.com/YulyaY/go_final_project.git/internal/config"
 	"github.com/YulyaY/go_final_project.git/internal/db"
 	"github.com/YulyaY/go_final_project.git/internal/domain/service"
+
 	"github.com/YulyaY/go_final_project.git/internal/handler"
 	"github.com/YulyaY/go_final_project.git/internal/repository"
 	"github.com/go-chi/chi"
@@ -19,6 +20,7 @@ const (
 )
 
 func main() {
+
 	appConfig, err := config.LoadAppConfig()
 	if err != nil {
 		log.Fatalf("Can not set config: '%s'", err.Error())
@@ -29,7 +31,6 @@ func main() {
 	}
 
 	//db, err := db.New(appConfig.DbFilePath)
-
 	db, err := db.NewPosgres(appConfig)
 	if err != nil {
 		log.Fatalf("Can not init db connect or create datebase: '%s'", err.Error())
@@ -60,5 +61,4 @@ func main() {
 	if err := http.ListenAndServe(":"+appConfig.Port, r); err != nil {
 		log.Fatal(err)
 	}
-
 }

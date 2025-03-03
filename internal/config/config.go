@@ -43,7 +43,6 @@ func LoadAppConfig() (AppConfig, error) {
 	if appConfig.AppPassword != "" && appConfig.Secret == "" {
 		return AppConfig{}, errNoEnvSecret
 	}
-
 	return appConfig, nil
 }
 
